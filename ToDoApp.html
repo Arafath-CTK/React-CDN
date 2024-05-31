@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React To-Do App</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .header {
+            background-color: #F1E5D1;
+            width: 100vw;
+            height: 10vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .to_header {
+            color: rgb(56, 63, 70);
+        }
+
+        .do_header {
+            color: #987070;
+        }
+
+        .input_form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 20vh;
+        }
+
+        .input_form input {
+            border: 0;
+            background-color: #F1E5D1;
+            width: 60vw;
+            height: 8vh;
+            border-radius: 20px 0 0 20px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            padding-left: 15px;
+        }
+
+        .input_form input::placeholder {
+            color: rgb(56, 63, 70);
+            padding-left: 15px;
+            opacity: 0.5;
+        }
+
+        .input_form input:focus {
+            outline: 1px solid #987070;
+        }
+
+        .input_form button {
+            height: 8.3vh;
+            width: 9vw;
+            border: 0;
+            background-color: #C39898;
+            color: rgb(56, 63, 70);
+            border-radius: 0 20px 20px 0;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .list_container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .list_container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .list_container li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #F1E5D1;
+            width: 67vw;
+            color: rgb(56, 63, 70);
+            padding: 10px;
+            border-bottom: 1px solid #987070;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .list_container li:hover {
+            background-color: #C7B7A3;
+            transform: translateY(-2px);
+        }
+
+        .list_container li:first-child {
+            border-radius: 20px 20px 0 0;
+        }
+
+        .list_container li:last-child {
+            border-bottom: 0;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .list_container li:only-child {
+            border-radius: 20px;
+        }
+
+        .list_container input[type="checkbox"] {
+            accent-color: #987070;
+            margin-right: 15px;
+        }
+
+        .list_container span {
+            flex-grow: 1;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .list_container .edit_task {
+            background: none;
+            border: none;
+            color: #987070;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .list_container .edit_task:hover {
+            color: #705353;
+        }
+
+        .list_container .remove_task {
+            background: none;
+            border: none;
+            color: #ff4d4d;
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .list_container .remove_task:hover {
+            color: #ff1a1a;
+        }
+
+        .edit_form {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            width: 67vw;
+        }
+
+        .edit_form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 20px;
+            font-size: 14px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease;
+        }
+
+        .edit_form input[type="text"]:focus {
+            outline: 1px solid #987070;
+        }
+
+        .edit_form button {
+            background: none;
+            border: none;
+            color: #987070;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .sub_head {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sub_head h1 {
+            color: #987070;
+            text-decoration: underline;
+        }
+
+        .sub_head p {
+            color: #987070;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function TodoApp() {
+            const [tasks, setTasks] = useState([])
+            const [newTask, setNewTask] = useState("")
+            const [editIndex, setEditIndex] = useState(null)
+            const [editValue, setEditValue] = useState("")
+
+            const addTask = (e) => {
+                e.preventDefault()
+                if (newTask.trim() !== "") {
+                    setTasks([...tasks, { text: newTask, isCompleted: false }])
+                    setNewTask("")
+                }
+            }
+
+            const toggleCompleted = (index) => {
+                const updatedTasks = tasks.map((task, i) => {
+                    if (index === i) {
+                        return { ...task, isCompleted: !task.isCompleted }
+                    }
+                    return task
+                })
+                setTasks(updatedTasks)
+            }
+
+            const editTask = (index) => {
+                setEditIndex(index)
+                setEditValue(tasks[index].text)
+            }
+
+            const saveTask = (index) => {
+                const updatedTasks = tasks.map((task, i) => {
+                    if (index === i && editValue !== "") {
+                        return { ...task, text: editValue }
+                    }
+                    return task
+                })
+                setTasks(updatedTasks)
+                setEditIndex(null)
+                setEditValue("")
+            }
+
+            const removeTask = (index) => {
+                const updatedTasks = tasks.filter((task, i) => i !== index)
+                setTasks(updatedTasks)
+            }
+
+            return (
+                <>
+                    <div className="header">
+                        <h1 className="to_header">TO<span className="do_header">DO</span></h1>
+                    </div>
+                    <form className="input_form" onSubmit={addTask}>
+                        <input placeholder="What do you want to do?" type="text" value={newTask} onChange={(e) => setNewTask(e.target.value)} />
+                        <button type="submit">ADD</button>
+                    </form>
+
+                    <div class="sub_head">
+                        {tasks.length > 0 ? (
+                            <h1>Tasks.</h1>
+                        ) : (
+                            <p>No tasks added yet. Add a task to get started!</p>
+                        )}
+                    </div>
+                    <div className="list_container">
+                        <ul>
+                            {tasks.map((task, index) => (
+                                <li key={index}>
+                                    {editIndex === index ? (
+                                        <form className="edit_form">
+                                            <input type="text" value={editValue} onChange={(e) => setEditValue(e.target.value)} />
+                                            <button type="submit" onClick={() => saveTask(index)} ><i class="bi bi-check2-circle"></i></button>
+                                        </form>
+                                    ) : (
+                                        <>
+                                            <input type="checkbox" checked={task.isCompleted} onChange={() => toggleCompleted(index)} />
+                                            <span style={{ textDecoration: task.isCompleted ? "line-through" : "none" }}>{task.text}</span>
+                                            <button className="edit_task" onClick={() => editTask(index)}><i class="bi bi-pencil-square"></i></button>
+                                            <button className="remove_task" onClick={() => removeTask(index)}><i class="bi bi-trash3"></i></button>
+                                        </>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </>
+            )
+        }
+
+        ReactDOM.render(<TodoApp />, document.getElementById("root"))
+    </script>
+
+</body>
+
+</html>
